@@ -1,7 +1,7 @@
 package com.nuzhd.springsecurityexample.model;
 
 import javax.persistence.*;
-import java.time.Instant;
+import java.util.Calendar;
 import java.util.Date;
 
 @Entity
@@ -14,6 +14,7 @@ public class VerificationToken {
     private String token;
     private Date expirationTime;
 
+    private static final int EXPIRATION_TIME_MINUTES = 10;
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id",
             nullable = false,
@@ -27,7 +28,14 @@ public class VerificationToken {
         super();
         this.token = token;
         this.user = user;
-        this.expirationTime = Date.from(Instant.now().plus());
+        this.expirationTime = calculateExpirationTime(EXPIRATION_TIME_MINUTES);
+
+    }
+
+    private Date calculateExpirationTime(int expirationTime) {
+        Calendar date = Calendar.getInstance();
+
+        return new Date(date.getTimeInMillis() + ((long) expirationTime * 60 * 1000));
     }
 
 }
